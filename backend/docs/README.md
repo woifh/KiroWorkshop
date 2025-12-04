@@ -22,7 +22,7 @@ To regenerate the documentation after code changes:
 
 ```bash
 cd backend
-python3 -m pdoc main models database -o ../docs
+python3 -m pdoc main models database -o docs
 ```
 
 ## Requirements
