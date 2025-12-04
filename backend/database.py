@@ -13,10 +13,11 @@ class DynamoDBClient:
         self.table = self.dynamodb.Table(self.table_name)
 
     def create_event(self, event: EventCreate) -> Event:
-        event_id = str(uuid.uuid4())
+        event_id = event.eventId if event.eventId else str(uuid.uuid4())
+        event_data = event.model_dump(exclude={'eventId'})
         item = {
             'eventId': event_id,
-            **event.model_dump()
+            **event_data
         }
         
         self.table.put_item(Item=item)

@@ -15,6 +15,7 @@ class Event(BaseModel):
 
 
 class EventCreate(BaseModel):
+    eventId: Optional[str] = Field(None, description="Optional custom event identifier")
     title: str = Field(..., min_length=1, max_length=200, description="Event title")
     description: str = Field(..., min_length=1, max_length=2000, description="Event description")
     date: str = Field(..., description="Event date in ISO format (YYYY-MM-DD)")
