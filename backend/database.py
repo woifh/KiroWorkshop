@@ -82,7 +82,7 @@ class DynamoDBClient:
 
     # User methods
     def create_user(self, user: UserCreate) -> User:
-        user_id = str(uuid.uuid4())
+        user_id = user.userId if user.userId else str(uuid.uuid4())
         created_at = datetime.utcnow().isoformat() + 'Z'
         item = {
             'userId': user_id,

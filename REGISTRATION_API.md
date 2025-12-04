@@ -61,7 +61,7 @@ GET /users
 
 #### Register for Event
 ```http
-POST /events/{eventId}/register
+POST /events/{eventId}/registrations
 Content-Type: application/json
 
 {
@@ -111,7 +111,7 @@ Content-Type: application/json
 
 #### Unregister from Event
 ```http
-DELETE /events/{eventId}/register/{userId}
+DELETE /events/{eventId}/registrations/{userId}
 ```
 
 **Response (200 OK) - Without Waitlist Promotion:**
@@ -134,6 +134,25 @@ DELETE /events/{eventId}/register/{userId}
 {
   "detail": "Registration not found"
 }
+```
+
+#### Get Event Registrations
+```http
+GET /events/{eventId}/registrations
+```
+
+**Response (200 OK):**
+```json
+[
+  {
+    "registrationId": "e4c25c9d-442b-4d5c-9425-bdf8f4131e35",
+    "userId": "d519132d-6e2b-4e86-acb2-d940b46cc80b",
+    "eventId": "8745643b-1ad6-45cf-b0e9-ee9060e99c3d",
+    "status": "registered",
+    "registeredAt": "2025-12-04T03:29:41.983733Z",
+    "waitlistPosition": null
+  }
+]
 ```
 
 #### Get User Registrations

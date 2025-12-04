@@ -63,8 +63,9 @@ A serverless Event Management API built with FastAPI, DynamoDB, and AWS CDK. Thi
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/events/{eventId}/register` | Register user for event |
-| DELETE | `/events/{eventId}/register/{userId}` | Unregister user from event |
+| POST | `/events/{eventId}/registrations` | Register user for event |
+| DELETE | `/events/{eventId}/registrations/{userId}` | Unregister user from event |
+| GET | `/events/{eventId}/registrations` | Get event's registrations |
 | GET | `/users/{userId}/registrations` | Get user's registrations |
 
 See [REGISTRATION_API.md](REGISTRATION_API.md) for detailed registration API documentation.

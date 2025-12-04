@@ -24,7 +24,8 @@ class EventCreate(BaseModel):
     date: str = Field(..., description="Event date in ISO format (YYYY-MM-DD)")
     location: str = Field(..., min_length=1, max_length=200, description="Event location")
     capacity: int = Field(..., gt=0, le=100000, description="Event capacity (1-100000)")
-    hasWaitlist: bool = Field(default=False, description="Enable waitlist when full")
+    hasWaitlist: Optional[bool] = Field(None, description="Enable waitlist when full")
+    waitlistEnabled: Optional[bool] = Field(None, description="Enable waitlist when full (alias)")
     organizer: str = Field(..., min_length=1, max_length=200, description="Event organizer")
     status: Literal["active", "cancelled", "completed"] = Field(default="active", description="Event status")
 
@@ -36,6 +37,13 @@ class EventCreate(BaseModel):
             return v
         except ValueError:
             raise ValueError('Date must be in ISO format (YYYY-MM-DD)')
+    
+    def model_post_init(self, __context):
+        # Support waitlistEnabled as alias for hasWaitlist
+        if self.waitlistEnabled is not None and self.hasWaitlist is None:
+            self.hasWaitlist = self.waitlistEnabled
+        elif self.hasWaitlist is None:
+            self.hasWaitlist = False
 
 
 class EventUpdate(BaseModel):
@@ -68,6 +76,7 @@ class User(BaseModel):
 
 
 class UserCreate(BaseModel):
+    userId: Optional[str] = Field(None, description="Optional custom user identifier")
     name: str = Field(..., min_length=1, max_length=200, description="User's name")
 
 

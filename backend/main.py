@@ -167,25 +167,28 @@ def list_users():
 
 
 # Registration endpoints
-def validate_uuid(value: str, field_name: str):
+def validate_id(value: str, field_name: str):
+    # Allow both UUID format and custom string IDs (alphanumeric with hyphens)
+    # UUID pattern or custom ID pattern (letters, numbers, hyphens, underscores)
     uuid_pattern = re.compile(
         r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
         re.IGNORECASE
     )
-    if not uuid_pattern.match(value):
+    custom_id_pattern = re.compile(r'^[a-zA-Z0-9_-]+$')
+    
+    if not (uuid_pattern.match(value) or custom_id_pattern.match(value)):
         raise HTTPException(
             status_code=422,
-            detail=f"Invalid {field_name}: must be a valid UUID format"
+            detail=f"Invalid {field_name}: must be a valid UUID or alphanumeric ID"
         )
 
 
-@app.post("/events/{event_id}/register", response_model=RegistrationResponse, status_code=201)
 @app.post("/events/{event_id}/registrations", response_model=RegistrationResponse, status_code=201)
 def register_for_event(event_id: str, registration: RegistrationCreate):
     try:
         user_id = registration.userId
-        validate_uuid(user_id, "userId")
-        validate_uuid(event_id, "eventId")
+        validate_id(user_id, "userId")
+        validate_id(event_id, "eventId")
         
         logger.info(f"User {user_id} registering for event {event_id}")
         
@@ -283,12 +286,11 @@ def register_for_event(event_id: str, registration: RegistrationCreate):
         raise HTTPException(status_code=500, detail="Failed to register for event")
 
 
-@app.delete("/events/{event_id}/register/{user_id}", status_code=200)
 @app.delete("/events/{event_id}/registrations/{user_id}", status_code=200)
 def unregister_from_event(event_id: str, user_id: str):
     try:
-        validate_uuid(user_id, "userId")
-        validate_uuid(event_id, "eventId")
+        validate_id(user_id, "userId")
+        validate_id(event_id, "eventId")
         
         logger.info(f"User {user_id} unregistering from event {event_id}")
         
@@ -362,7 +364,7 @@ def unregister_from_event(event_id: str, user_id: str):
 @app.get("/events/{event_id}/registrations")
 def get_event_registrations(event_id: str):
     try:
-        validate_uuid(event_id, "eventId")
+        validate_id(event_id, "eventId")
         
         logger.info(f"Getting registrations for event {event_id}")
         
@@ -387,7 +389,7 @@ def get_event_registrations(event_id: str):
 @app.get("/users/{user_id}/registrations", response_model=List[UserRegistrationDetail])
 def get_user_registrations(user_id: str):
     try:
-        validate_uuid(user_id, "userId")
+        validate_id(user_id, "userId")
         
         logger.info(f"Getting registrations for user {user_id}")
         
