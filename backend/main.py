@@ -120,3 +120,7 @@ def delete_event(event_id: str):
     except Exception as e:
         logger.error(f"Error deleting event: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to delete event")
+
+# Lambda handler
+from mangum import Mangum
+handler = Mangum(app)
