@@ -52,9 +52,9 @@ The user registration feature enables users to register for events with capacity
 4. WHEN a user successfully registers, THE Registration System SHALL return a confirmation with registration details
 5. THE Registration System SHALL validate that both the user ID and event ID exist before processing registration
 
-### Requirement 4: Full Event Handling
+### Requirement 4: Full Event Registration Denial
 
-**User Story:** As a user, I want to be notified when an event is full, so that I know I cannot register.
+**User Story:** As a user, I want to be notified when an event is full without a waitlist, so that I know registration is not possible.
 
 #### Acceptance Criteria
 
@@ -64,7 +64,7 @@ The user registration feature enables users to register for events with capacity
 4. WHEN checking capacity, THE Registration System SHALL include only confirmed registrations in the count
 5. THE Registration System SHALL return the current capacity status in error messages
 
-### Requirement 5: Waitlist Management
+### Requirement 5: Waitlist Acceptance and Management
 
 **User Story:** As a user, I want to join a waitlist when an event is full, so that I can attend if a spot becomes available.
 
