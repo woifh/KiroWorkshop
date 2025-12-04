@@ -180,6 +180,7 @@ def validate_uuid(value: str, field_name: str):
 
 
 @app.post("/events/{event_id}/register", response_model=RegistrationResponse, status_code=201)
+@app.post("/events/{event_id}/registrations", response_model=RegistrationResponse, status_code=201)
 def register_for_event(event_id: str, registration: RegistrationCreate):
     try:
         user_id = registration.userId
@@ -283,6 +284,7 @@ def register_for_event(event_id: str, registration: RegistrationCreate):
 
 
 @app.delete("/events/{event_id}/register/{user_id}", status_code=200)
+@app.delete("/events/{event_id}/registrations/{user_id}", status_code=200)
 def unregister_from_event(event_id: str, user_id: str):
     try:
         validate_uuid(user_id, "userId")
@@ -355,6 +357,31 @@ def unregister_from_event(event_id: str, user_id: str):
     except Exception as e:
         logger.error(f"Error unregistering from event: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to unregister from event")
+
+
+@app.get("/events/{event_id}/registrations")
+def get_event_registrations(event_id: str):
+    try:
+        validate_uuid(event_id, "eventId")
+        
+        logger.info(f"Getting registrations for event {event_id}")
+        
+        # Check if event exists
+        event = db.get_event(event_id)
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Get all registrations for event
+        registrations = db.get_event_registrations(event_id)
+        
+        logger.info(f"Found {len(registrations)} registrations for event {event_id}")
+        return registrations
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting event registrations: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve event registrations")
 
 
 @app.get("/users/{user_id}/registrations", response_model=List[UserRegistrationDetail])

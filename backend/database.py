@@ -175,10 +175,11 @@ class DynamoDBClient:
         try:
             self.events_table.update_item(
                 Key={'eventId': event_id},
-                UpdateExpression=f'SET {field} = {field} + :val',
-                ExpressionAttributeValues={':val': amount}
+                UpdateExpression=f'SET {field} = if_not_exists({field}, :zero) + :val',
+                ExpressionAttributeValues={':val': amount, ':zero': 0}
             )
-        except ClientError:
+        except ClientError as e:
+            print(f"Error incrementing {field} for event {event_id}: {str(e)}")
             pass
 
     def get_waitlist_users(self, event_id: str) -> List[Registration]:
