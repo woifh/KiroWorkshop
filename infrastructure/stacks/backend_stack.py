@@ -27,12 +27,14 @@ class BackendStack(Stack):
         )
 
         # Lambda Function
-        api_lambda = lambda_.DockerImageFunction(
+        import os
+        lambda_package_dir = os.path.join(os.path.dirname(__file__), "../lambda_package")
+        
+        api_lambda = lambda_.Function(
             self, "EventsApiLambda",
-            code=lambda_.DockerImageCode.from_image_asset(
-                directory="../backend",
-                file="Dockerfile"
-            ),
+            runtime=lambda_.Runtime.PYTHON_3_11,
+            handler="main.handler",
+            code=lambda_.Code.from_asset(lambda_package_dir),
             memory_size=512,
             timeout=Duration.seconds(30),
             environment={

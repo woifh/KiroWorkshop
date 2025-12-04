@@ -7,3 +7,5 @@ __pycache__
 cdk.out
 .cdk.staging
 cdk.context.json
+# Lambda package directory
+lambda_package/
