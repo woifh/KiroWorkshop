@@ -14,7 +14,7 @@ class BackendStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        # DynamoDB Table
+        # DynamoDB Tables
         events_table = dynamodb.Table(
             self, "EventsTable",
             table_name="Events",
@@ -24,6 +24,56 @@ class BackendStack(Stack):
             ),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
             removal_policy=RemovalPolicy.DESTROY
+        )
+
+        users_table = dynamodb.Table(
+            self, "UsersTable",
+            table_name="Users",
+            partition_key=dynamodb.Attribute(
+                name="userId",
+                type=dynamodb.AttributeType.STRING
+            ),
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
+            removal_policy=RemovalPolicy.DESTROY
+        )
+
+        registrations_table = dynamodb.Table(
+            self, "RegistrationsTable",
+            table_name="Registrations",
+            partition_key=dynamodb.Attribute(
+                name="registrationId",
+                type=dynamodb.AttributeType.STRING
+            ),
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
+            removal_policy=RemovalPolicy.DESTROY
+        )
+
+        # Add GSI for userId-eventId lookup
+        registrations_table.add_global_secondary_index(
+            index_name="userId-eventId-index",
+            partition_key=dynamodb.Attribute(
+                name="userId",
+                type=dynamodb.AttributeType.STRING
+            ),
+            sort_key=dynamodb.Attribute(
+                name="eventId",
+                type=dynamodb.AttributeType.STRING
+            ),
+            projection_type=dynamodb.ProjectionType.ALL
+        )
+
+        # Add GSI for eventId-status lookup
+        registrations_table.add_global_secondary_index(
+            index_name="eventId-status-index",
+            partition_key=dynamodb.Attribute(
+                name="eventId",
+                type=dynamodb.AttributeType.STRING
+            ),
+            sort_key=dynamodb.Attribute(
+                name="status",
+                type=dynamodb.AttributeType.STRING
+            ),
+            projection_type=dynamodb.ProjectionType.ALL
         )
 
         # Lambda Function
@@ -38,12 +88,16 @@ class BackendStack(Stack):
             memory_size=512,
             timeout=Duration.seconds(30),
             environment={
-                "DYNAMODB_TABLE_NAME": events_table.table_name
+                "DYNAMODB_TABLE_NAME": events_table.table_name,
+                "USERS_TABLE_NAME": users_table.table_name,
+                "REGISTRATIONS_TABLE_NAME": registrations_table.table_name
             }
         )
 
         # Grant Lambda permissions to access DynamoDB
         events_table.grant_read_write_data(api_lambda)
+        users_table.grant_read_write_data(api_lambda)
+        registrations_table.grant_read_write_data(api_lambda)
 
         # API Gateway
         api = apigateway.LambdaRestApi(
@@ -65,7 +119,19 @@ class BackendStack(Stack):
         )
         
         CfnOutput(
-            self, "TableName",
+            self, "EventsTableName",
             value=events_table.table_name,
-            description="DynamoDB Table Name"
+            description="Events DynamoDB Table Name"
+        )
+
+        CfnOutput(
+            self, "UsersTableName",
+            value=users_table.table_name,
+            description="Users DynamoDB Table Name"
+        )
+
+        CfnOutput(
+            self, "RegistrationsTableName",
+            value=registrations_table.table_name,
+            description="Registrations DynamoDB Table Name"
         )
