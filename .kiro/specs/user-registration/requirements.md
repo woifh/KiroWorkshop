@@ -99,39 +99,6 @@ The user registration feature enables users to register for events with capacity
 3. THE Registration System SHALL indicate whether the user is registered or on the waitlist for each event
 4. WHEN a user has no registrations, THE Registration System SHALL return an empty list
 5. THE Registration System SHALL order events by date with the nearest events first
-
-### Requirement 8: Waitlist Position Tracking
-
-**User Story:** As a waitlisted user, I want to know my position in the waitlist, so that I can estimate my chances of getting a spot.
-
-#### Acceptance Criteria
-
-1. WHEN a user queries their waitlist status, THE Registration System SHALL return their current position number
-2. WHEN users ahead in the waitlist are promoted or removed, THE Registration System SHALL update all subsequent positions
-3. THE Registration System SHALL maintain waitlist order based on the original join timestamp
-4. WHEN a user is promoted from the waitlist, THE Registration System SHALL notify them of their registration status
-5. THE Registration System SHALL include waitlist position in the user's event listing
-
-### Requirement 9: Data Validation
-
-**User Story:** As a system administrator, I want all registration data to be validated, so that data integrity is maintained.
-
-#### Acceptance Criteria
-
-1. THE User System SHALL validate that user names are between 1 and 200 characters
-2. THE Registration System SHALL validate that user IDs and event IDs are valid UUID format
-3. THE Event System SHALL validate that capacity values are positive integers
-4. THE Registration System SHALL verify that events exist before allowing registration
-5. THE Registration System SHALL verify that users exist before allowing registration
-
-### Requirement 10: Registration State Management
-
-**User Story:** As a developer, I want clear registration states, so that the system behavior is predictable and maintainable.
-
-#### Acceptance Criteria
-
-1. THE Registration System SHALL maintain three distinct states for each user-event pair: not registered, registered, or waitlisted
-2. WHEN querying registration status, THE Registration System SHALL return the current state and relevant metadata
-3. THE Registration System SHALL prevent invalid state transitions such as moving from registered to waitlisted without unregistering first
-4. THE Registration System SHALL log all state changes with timestamps and user IDs
-5. THE Registration System SHALL provide atomic operations to prevent race conditions during registration
+6. THE Registration System SHALL include waitlist position when the user is on a waitlist
+7. THE Registration System SHALL validate that user IDs are valid UUID format before querying
+8. THE Registration System SHALL maintain three distinct states for each user-event pair: not registered, registered, or waitlisted
